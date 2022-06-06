@@ -1,6 +1,26 @@
+# version: 2.1
+# jobs:
+#   build:
+#     docker:
+#       - image: cimg/python:3.10.1
+#     steps:
+#       - checkout
+#       - run:
+#           command: |
+#             python3 --version
+#             python3 -m venv venv
+#             . venv/bin/activate
+#             pip install -r requirments.txt
+#       - run:
+#           name: Running tests
+#           command: |
+#             . venv/bin/activate
+#             python3 tests.py
+ 
+
 version: 2.1
 jobs:
-  build:
+  build_and_test:
     docker:
       - image: cimg/python:3.10.1
     steps:
@@ -16,4 +36,20 @@ jobs:
           command: |
             . venv/bin/activate
             python3 tests.py
- 
+            echo "Test completes"
+  deploy:
+    docker:
+      - image: cimg/base:2022.05
+    steps:
+      - run: echo "Production Run"
+    
+workflows:
+  test_my_app:
+    jobs:
+      - build_and_test
+      - deploy:
+          requires:
+            - build_and_test # only deploy if the build_and_test job has completed
+          filters:
+            branches:
+              only: main # only deploy when on main
