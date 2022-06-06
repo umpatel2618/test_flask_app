@@ -71,7 +71,7 @@ workflows:
               only: develop
       - deploy:
           requires:
-            - build_and_test # only deploy if the build_and_test job has completed
+            - staging
           filters:
             branches:
               only: main # only deploy when on main
